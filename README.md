@@ -1,8 +1,8 @@
 # Hothouse Flasher
 
-A browser-based firmware flasher for the [Cleveland Music Co. Hothouse](https://clevelandmusicco.com) pedal. Flash firmware to your Hothouse over USB — no software installation required.
+A browser-based firmware flasher for the [Cleveland Music Co. Hothouse DIY DSP pedal](https://clevelandmusicco.com). Flash firmware to your Hothouse over USB ... no software installation required.
 
-If you're here simply to flash stuff to your pedal, then [go right to the app](https://clevelandmusicco.github.io/HothouseFlasher)! You're probably not interested in running the code behind this web app ...
+If you're here simply to flash stuff to your pedal, then [GO RIGHT TO THE APP](https://clevelandmusicco.github.io/HothouseFlasher)! You're probably not interested in running the code behind this web app ...
 
 ... but if you _are_ interested, read on.
 
@@ -18,9 +18,9 @@ WebUSB is required. Use a **Chromium-based desktop browser**:
 
 **Not supported:** Firefox, Safari, iOS browsers, or any mobile browser.
 
-The app must be served over **HTTPS**. The GitHub Pages deployment satisfies this automatically. For local development, Vite's dev server uses HTTP on localhost, which browsers treat as a secure context.
+The app must be served over **HTTPS** in order for the `webfu` bit to work. The GitHub Pages deployment satisfies this automatically. For local development, Vite's dev server uses HTTP on localhost, which browsers treat as a secure context.
 
-Also note that I do not have Windows or Mac machines on which to test. I have only ever tested a local dev setup on Linux.
+Also note that I do not have Windows or Mac machines on which to test. I have **only ever tested a local dev setup on Linux**.
 
 ---
 
@@ -57,7 +57,7 @@ npm run dev
 
 Open `http://localhost:5173` in Chrome. The app loads firmware from `public/firmware-manifest.json` and serves `.bin` files from `public/firmware/`. Both are seeded with the current release for local development.
 
-> **Note:** To test actual flashing (and anything beyond the first app state) locally, you need a physical Hothouse in DFU mode connected via USB. The app runs at `http://localhost:5173` — Chrome treats localhost as a secure context, so WebUSB works.
+> **Note:** To test actual flashing (and anything beyond the first app state) locally, you need a physical Hothouse (or at least a Daisy Seed) in DFU mode connected via USB. The app runs at `http://localhost:5173` — Chrome treats localhost as a secure context, so WebUSB works.
 
 ---
 
