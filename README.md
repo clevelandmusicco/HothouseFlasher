@@ -2,7 +2,9 @@
 
 A browser-based firmware flasher for the [Cleveland Music Co. Hothouse](https://clevelandmusicco.com) pedal. Flash firmware to your Hothouse over USB — no software installation required.
 
-**Live app:** [clevelandmusicco.github.io/HothouseFlasher](https://clevelandmusicco.github.io/HothouseFlasher) *(once deployed)*
+If you're here simply to flash stuff to your pedal, then [go right to the app](https://clevelandmusicco.github.io/HothouseFlasher)! You're probably not interested in running the code behind this web app ...
+
+... but if you _are_ interested, read on.
 
 ---
 
@@ -12,20 +14,22 @@ WebUSB is required. Use a **Chromium-based desktop browser**:
 
 - Google Chrome (recommended)
 - Microsoft Edge
-- Brave, Opera, and other Chromium forks
+- Brave, Opera, and other Chromium forks (these are spotty, at best)
 
 **Not supported:** Firefox, Safari, iOS browsers, or any mobile browser.
 
 The app must be served over **HTTPS**. The GitHub Pages deployment satisfies this automatically. For local development, Vite's dev server uses HTTP on localhost, which browsers treat as a secure context.
 
+Also note that I do not have Windows or Mac machines on which to test. I have only ever tested a local dev setup on Linux.
+
 ---
 
 ## Putting Your Hothouse Into DFU Mode
 
-1. Hold the **BOOT** button on your Hothouse.
-2. While holding BOOT, press and release the **RESET** button.
-3. Release the BOOT button.
-4. Connect your Hothouse to your computer via USB.
+1. Connect your Hothouse to your computer via USB.
+2. Hold the **BOOT** button on your Hothouse.
+3. While holding BOOT, press and release the **RESET** button.
+4. Release the BOOT button.
 
 The Hothouse will appear as `STM Device in DFU Mode` (`0483:df11`) on your system.
 
@@ -35,7 +39,7 @@ The Hothouse will appear as `STM Device in DFU Mode` (`0483:df11`) on your syste
 
 On Windows, Chrome cannot access the DFU device until you install the WinUSB driver. You only need to do this once.
 
-1. Put your Hothouse into DFU mode and connect via USB.
+1. Connect the Hothouse via USBP and put it in DFU mode.
 2. Download [Zadig](https://zadig.akeo.ie/) and open it.
 3. Find the device — usually listed as **"DFU in FS Mode"** or **"STM32 BOOTLOADER"**.
 4. Select **WinUSB** as the target driver.
@@ -53,7 +57,7 @@ npm run dev
 
 Open `http://localhost:5173` in Chrome. The app loads firmware from `public/firmware-manifest.json` and serves `.bin` files from `public/firmware/`. Both are seeded with the current release for local development.
 
-> **Note:** To test actual flashing locally, you need a physical Hothouse in DFU mode connected via USB. The app runs at `http://localhost:5173` — Chrome treats localhost as a secure context, so WebUSB works.
+> **Note:** To test actual flashing (and anything beyond the first app state) locally, you need a physical Hothouse in DFU mode connected via USB. The app runs at `http://localhost:5173` — Chrome treats localhost as a secure context, so WebUSB works.
 
 ---
 
@@ -91,20 +95,9 @@ npm run generate-manifest
 
 ---
 
-## Deploying to GitHub Pages
-
-1. Create a GitHub repository (e.g., `clevelandmusicco/HothouseFlasher`).
-2. Push this code to the `main` branch.
-3. In **Settings → Pages**, set source to **GitHub Actions**.
-4. The workflow at `.github/workflows/pages.yml` runs automatically on push to `main` and daily at 06:00 UTC.
-
-The daily schedule automatically picks up new firmware releases from `clevelandmusicco/HothouseExamples` without requiring a code push.
-
----
-
 ## Project Structure
 
-```
+```bash
 src/
   main.ts              Entry point; mounts layout skeleton
   app.ts               State machine orchestration
@@ -136,5 +129,4 @@ public/
 - **Windows requires Zadig driver setup.** This is a one-time step but can trip up new users.
 - **Internal flash only.** QSPI/external flash is not supported.
 - **No firmware checksums.** Binaries are served as-is from the official release.
-- **After flashing, the user must press RESET manually.** The Daisy Seed's DfuSe implementation sets `manifestationTolerant=false`, meaning the device does not auto-reset after flashing.
 - **Local development requires seeded `.bin` files.** Run `npm run generate-manifest` once to populate `public/firmware/` for full local testing.
