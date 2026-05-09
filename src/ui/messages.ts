@@ -42,7 +42,7 @@ export const MSG = {
   DFU_STANDARD_INTRO: 'If the quick method doesn\'t work (non-HothouseExamples firmware previosuly loaded, new Daisy Seed, etc.):',
   DFU_STANDARD_STEPS: [
     'Connect the Hothouse to your computer via USB.',
-    'Hold the BOOT button on your Hothouse.',
+    'Hold the BOOT button on the Daisy Seed (remove the Hothouse back plate).',
     'While holding BOOT, press and release the RESET button.',
     'Release BOOT. Your Hothouse is now in DFU mode.',    
   ],
