@@ -1,0 +1,22 @@
+{
+  "name": "hothouse-flasher",
+  "version": "1.0.0",
+  "description": "Browser-based firmware flasher for the Cleveland Music Co. Hothouse pedal",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "generate-manifest": "tsx scripts/generate-manifest.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.2",
+    "@types/w3c-web-usb": "^1.0.14",
+    "tsx": "^4.11.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
+  },
+  "dependencies": {
+    "dfu": "^0.1.5"
+  }
+}
