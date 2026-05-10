@@ -93,9 +93,9 @@ a:hover {
 }
 
 .site-header__logo-wrap {
-  background: #ffffff;
+  /*background: #ffffff;
   border-radius: 6px;
-  padding: 4px 8px;
+  padding: 4px 8px; Uncomment for a white box around the logo */
   display: flex;
   align-items: center;
   flex-shrink: 0;
