@@ -2,98 +2,28 @@
 
 A browser-based firmware flasher for the [Cleveland Music Co. Hothouse DIY DSP pedal](https://clevelandmusicco.com). Flash firmware to your Hothouse over USB ... no software installation required.
 
-If you're here simply to flash stuff to your pedal, then [GO RIGHT TO THE APP](https://clevelandmusicco.github.io/HothouseFlasher)! You're probably not interested in running the code behind this web app ...
+If you're here simply to flash stuff to your pedal, then [**GO RIGHT TO THE APP**](https://clevelandmusicco.github.io/HothouseFlasher). You're probably not interested in running the web flasher code on your dev workstation ...
 
 ... but if you _are_ interested, read on.
 
 ---
 
-## Browser Requirements
+## Architecture
 
-WebUSB is required. Use a **Chromium-based desktop browser**:
+This is a single-page TypeScript app (Vite + no framework) that flashes firmware to the Daisy Seed-based Hothouse pedal via WebUSB. It requires a Chromium desktop browser and HTTPS (or localhost).
 
-- Google Chrome (recommended)
-- Microsoft Edge
-- Brave, Opera, and other Chromium forks (these are spotty, at best)
+**Data flow at runtime:**
+1. Browser fetches `/firmware-manifest.json` (static JSON, generated at CI build time).
+2. User selects a firmware entry; on flash, browser fetches the `.bin` from `/firmware/<name>.bin`.
+3. The binary is written to the STM32H750's internal flash via the `dfu` npm package (WebDFU/DfuSe protocol) over WebUSB.
 
-**Not supported:** Firefox, Safari, iOS browsers, or any mobile browser.
+**State machine (`src/ui/state.ts` → `src/app.ts`):**
 
-The app must be served over **HTTPS** in order for the `webfu` bit to work. The GitHub Pages deployment satisfies this automatically. For local development, Vite's dev server uses HTTP on localhost, which browsers treat as a secure context.
+`AppState` is made up of 13 states. `AppStateManager` holds current state and notifies subscribers on `transition()`. `app.ts` wires all async handlers (connect, flash, etc.) to state transitions and re-renders after each one.
 
-Also note that I do not have Windows or Mac machines on which to test. I have **only ever tested a local dev setup on Linux**.
+State flow (happy path): `CHECKING_BROWSER` -> `LOADING_MANIFEST` -> `IDLE` -> `CONNECTING` -> `CONNECTED` -> `FIRMWARE_SELECTED` -> `FLASHING` -> `FLASH_SUCCESS`.
 
----
-
-## Putting Your Hothouse Into DFU Mode
-
-1. Connect your Hothouse to your computer via USB.
-2. Hold the **BOOT** button on your Hothouse.
-3. While holding BOOT, press and release the **RESET** button.
-4. Release the BOOT button.
-
-The Hothouse will appear as `STM Device in DFU Mode` (`0483:df11`) on your system.
-
----
-
-## Windows Driver Setup (Zadig)
-
-On Windows, Chrome cannot access the DFU device until you install the WinUSB driver. You only need to do this once.
-
-1. Connect the Hothouse via USBP and put it in DFU mode.
-2. Download [Zadig](https://zadig.akeo.ie/) and open it.
-3. Find the device — usually listed as **"DFU in FS Mode"** or **"STM32 BOOTLOADER"**.
-4. Select **WinUSB** as the target driver.
-5. Click **Install Driver** (or **Replace Driver**).
-6. Return to the browser and click **Connect Hothouse**.
-
----
-
-## Running Locally
-
-```bash
-npm install
-npm run dev
-```
-
-Open `http://localhost:5173` in Chrome. The app loads firmware from `public/firmware-manifest.json` and serves `.bin` files from `public/firmware/`. Both are seeded with the current release for local development.
-
-> **Note:** To test actual flashing (and anything beyond the first app state) locally, you need a physical Hothouse (or at least a Daisy Seed) in DFU mode connected via USB. The app runs at `http://localhost:5173` — Chrome treats localhost as a secure context, so WebUSB works.
-
----
-
-## Building
-
-```bash
-npm run build
-```
-
-Output goes to `dist/`. Preview the production build with:
-
-```bash
-npm run preview
-```
-
----
-
-## Firmware Discovery
-
-Firmware is served from a static manifest generated at build time. The CI workflow:
-
-1. Queries the latest release from `clevelandmusicco/HothouseExamples` via the GitHub API.
-2. Downloads all `.bin` release assets into `public/firmware/`.
-3. Generates `public/firmware-manifest.json` with names, filenames, and local paths.
-4. Builds the Vite app (which copies `public/` into `dist/`).
-5. Deploys `dist/` to GitHub Pages.
-
-At runtime, the browser fetches `/firmware-manifest.json` and `/firmware/<name>.bin` from the same origin. No GitHub API calls happen in the browser.
-
-To regenerate the manifest locally (requires internet access):
-
-```bash
-npm run generate-manifest
-```
-
----
+**DFU quirk:** The STM32H750 stalls the GETSTATUS poll after writing with DFU Error 74. `flasher.ts` treats a stall error after `writeComplete` as success (matches `dfu-util` behavior). 🤷
 
 ## Project Structure
 
@@ -120,6 +50,85 @@ public/
 .github/workflows/
   pages.yml            Build + generate manifest + deploy workflow
 ```
+
+## Browser Requirements
+
+WebUSB is required. Use a **Chromium-based desktop browser**:
+
+- Google Chrome (recommended)
+- Microsoft Edge
+- Brave, Opera, and other Chromium forks (these are spotty, at best)
+
+**Not supported:** Firefox, Safari, iOS browsers, or any mobile browser.
+
+The app must be served over **HTTPS** in order for the `webfu` bit to work. The GitHub Pages deployment satisfies this automatically. For local development, Vite's dev server uses HTTP on localhost, which browsers treat as a secure context.
+
+Also note that I do not have Windows or Mac machines on which to test. I have **only ever tested a local dev setup on Linux**.
+
+## Putting Your Hothouse Into DFU Mode
+
+1. Connect your Hothouse to your computer via USB.
+2. Hold the **BOOT** button on your Hothouse.
+3. While holding BOOT, press and release the **RESET** button.
+4. Release the BOOT button.
+
+The Hothouse will appear as `STM Device in DFU Mode` (`0483:df11`) on your system.
+
+## Windows Driver Setup (Zadig)
+
+On Windows, Chrome cannot access the DFU device until you install the WinUSB driver. You only need to do this once.
+
+1. Connect the Hothouse via USBP and put it in DFU mode.
+2. Download [Zadig](https://zadig.akeo.ie/) and open it.
+3. Find the device — usually listed as **"DFU in FS Mode"** or **"STM32 BOOTLOADER"**.
+4. Select **WinUSB** as the target driver.
+5. Click **Install Driver** (or **Replace Driver**).
+6. Return to the browser and click **Connect Hothouse**.
+
+## Running Locally
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173` in Chrome. The app loads firmware from `public/firmware-manifest.json` and serves `.bin` files from `public/firmware/`. Both are seeded with the current release for local development.
+
+> **Note:** To test actual flashing (and anything beyond the first app state) locally, you need a physical Hothouse (or at least a Daisy Seed) in DFU mode connected via USB. The app runs at `http://localhost:5173` — Chrome treats localhost as a secure context, so WebUSB works.
+
+## Building
+
+```bash
+npm run build
+```
+
+Output goes to `dist/`. Preview the production build with:
+
+```bash
+npm run preview
+```
+
+There is no test suite and no linter configured.
+
+## Firmware Discovery
+
+Firmware is served from a static manifest generated at build time. The CI workflow:
+
+1. Queries the latest release from `clevelandmusicco/HothouseExamples` via the GitHub API.
+2. Downloads all `.bin` release assets into `public/firmware/`.
+3. Generates `public/firmware-manifest.json` with names, filenames, and local paths.
+4. Builds the Vite app (which copies `public/` into `dist/`).
+5. Deploys `dist/` to GitHub Pages.
+
+At runtime, the browser fetches `/firmware-manifest.json` and `/firmware/<name>.bin` from the same origin. No GitHub API calls happen in the browser.
+
+To regenerate the manifest and populate `public/firmware/` locally (requires internet access):
+
+```bash
+npm run generate-manifest
+```
+
+Without this step, the manifest either won't load at all, or if it does (partial run), firmware downloads will 404.
 
 ---
 
