@@ -316,12 +316,12 @@ function renderSuccess(firmware: FirmwareEntry, onFlashAnother: () => void): HTM
   card.appendChild(el('p', { className: 'mt-1' }, MSG.SUCCESS_DETAIL(firmware.name)));
 
   if (firmware.readmeUrl) {
-    const p = el('p', { className: 'mt-2 text-sm' });
+    const p = el('p', { className: 'mt-2' });
     p.appendChild(el('a', { href: firmware.readmeUrl, target: '_blank', rel: 'noopener' }, MSG.SOURCE_URL));
     card.appendChild(p);
   }
 
-  card.appendChild(el('p', { className: 'mt-2 fw-600' }, MSG.SUCCESS_RESET_INSTRUCTION));
+  card.appendChild(el('p', { className: 'mt-2' }, MSG.SUCCESS_RESET_INSTRUCTION));
 
   const btn = el('button', { className: 'btn btn-secondary btn-lg mt-3' }, MSG.FLASH_ANOTHER);
   (btn as HTMLButtonElement).type = 'button';
