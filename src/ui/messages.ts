@@ -32,17 +32,19 @@ export const MSG = {
 
   DFU_QUICK_LABEL: 'Quick method',
   DFU_QUICK_INTRO: 'If your Hothouse is currently running any official HothouseExamples firmware:',
+  DFU_QUICK_NOTE: 'NOTE: This excludes Earth, Mars & Venus binaries for now.\n ' +
+                  'You will need to use the standard method after you flash one of those.',
   DFU_QUICK_STEPS: [
     'Connect it to your computer with a USB cable.',
-    'Hold Footswitch 1 (the left footswitch) down for 2 seconds.',
+    'Simultaneously hold BOTH footswitches down for 2 seconds.',
     'Release when the LEDs alternately flash. Your Hothouse is now in DFU mode.',    
   ],
 
   DFU_STANDARD_LABEL: 'Standard method',
   DFU_STANDARD_INTRO: 'If the quick method doesn\'t work (non-HothouseExamples firmware previously loaded, new Daisy Seed, etc.):',
   DFU_STANDARD_STEPS: [
-    'Connect the Hothouse to your computer with a USB cable.',
-    'Hold the BOOT button on the Daisy Seed (remove the Hothouse back plate).',
+    'Remove the Hothouse back plate and connect to your computer with a USB cable.',
+    'Hold the BOOT button on the Daisy Seed.',
     'While holding BOOT, press and release the RESET button.',
     'Release BOOT. Your Hothouse is now in DFU mode.',    
   ],

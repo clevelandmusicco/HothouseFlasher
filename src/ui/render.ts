@@ -41,7 +41,12 @@ function dfuModeCard(): HTMLElement {
   card.appendChild(el('h2', { className: 'section-subheading' }, MSG.DFU_MODE_HEADING));
 
   card.appendChild(el('p', { className: 'text-sm fw-600 mt-1' }, MSG.DFU_QUICK_LABEL));
-  card.appendChild(el('p', { className: 'text-sm text-muted' }, MSG.DFU_QUICK_INTRO));
+  const quickIntro = el('p', { className: 'text-sm text-muted' });
+  quickIntro.appendChild(document.createTextNode(MSG.DFU_QUICK_INTRO));
+  const tipAnchor = el('span', { className: 'tooltip-anchor', tabindex: '0', role: 'note', 'aria-label': MSG.DFU_QUICK_NOTE }, '?');
+  tipAnchor.appendChild(el('span', { className: 'tooltip-popup' }, MSG.DFU_QUICK_NOTE));
+  quickIntro.appendChild(tipAnchor);
+  card.appendChild(quickIntro);
   card.appendChild(ol(MSG.DFU_QUICK_STEPS, 'steps mt-1'));
 
   card.appendChild(el('p', { className: 'text-sm fw-600 mt-2' }, MSG.DFU_STANDARD_LABEL));

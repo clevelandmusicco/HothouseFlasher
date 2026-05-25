@@ -544,3 +544,61 @@ details.troubleshoot .troubleshoot-body {
 .text-success { color: var(--color-success); }
 .text-sm { font-size: 0.875rem; }
 .fw-600 { font-weight: 600; }
+
+/* ── Tooltip ─────────────────────────────────────────────────────────────── */
+
+.tooltip-anchor {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.1em;
+  height: 1.1em;
+  border-radius: 50%;
+  background: var(--color-text-muted);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: default;
+  vertical-align: middle;
+  margin-left: 0.4em;
+  line-height: 1;
+  user-select: none;
+  outline-offset: 2px;
+}
+
+.tooltip-popup {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-dark);
+  color: #f9fafb;
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: pre-line;
+  width: max-content;
+  max-width: 22rem;
+  padding: 0.3em 0.65em;
+  border-radius: 5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 10;
+}
+
+.tooltip-popup::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--color-dark);
+}
+
+.tooltip-anchor:hover .tooltip-popup,
+.tooltip-anchor:focus .tooltip-popup {
+  opacity: 1;
+}
