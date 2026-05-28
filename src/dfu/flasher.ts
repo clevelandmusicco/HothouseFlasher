@@ -69,6 +69,7 @@ export class DaisyFlasher implements FirmwareFlasher {
       let writeComplete = false;
 
       process.events.on('erase/start', () => {
+        options.onPhase?.('erasing');
         options.onProgress(0);
       });
 
@@ -81,6 +82,7 @@ export class DaisyFlasher implements FirmwareFlasher {
       });
 
       process.events.on('write/process', (bytesSent: number, expectedSize: number) => {
+        options.onPhase?.('writing');
         // Write counts as the remaining 60% of total progress (40–100%)
         const progress = expectedSize > 0 ? 40 + (bytesSent / expectedSize) * 60 : 40;
         options.onProgress(Math.min(progress, 99));
@@ -93,15 +95,15 @@ export class DaisyFlasher implements FirmwareFlasher {
       });
 
       process.events.on('error', (err: unknown) => {
-        const message = err instanceof Error ? err.message : String(err);
-        // The STM32H750 stalls the GETSTATUS poll after manifestation (DFU Error 74) because
-        // the device resets before the host can read status. This is expected and safe to
-        // ignore once the write phase has completed — dfu-util exhibits the same behavior.
-        if (writeComplete && message.toLowerCase().includes('stall')) {
+        // After writeComplete, any error is the post-manifestation GETSTATUS stall (DFU Error 74):
+        // the device resets before the host reads status. Linux reports this as "stall", Windows
+        // (WinUSB) reports it as "pipe" — checking writeComplete covers both without string matching.
+        if (writeComplete) {
           options.onProgress(100);
           resolve();
           return;
         }
+        const message = err instanceof Error ? err.message : String(err);
         reject(new Error(`Flash failed: ${message}`));
       });
     });

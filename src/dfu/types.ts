@@ -7,6 +7,8 @@ export interface DeviceInfo {
 export interface FlashOptions {
   /** Called repeatedly during flash with 0–100 progress value */
   onProgress: (percent: number) => void;
+  /** Called when the flash phase changes between erase and write */
+  onPhase?: (phase: 'erasing' | 'writing') => void;
 }
 
 export interface FirmwareFlasher {

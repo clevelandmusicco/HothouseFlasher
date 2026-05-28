@@ -73,7 +73,7 @@ export function initApp(root: HTMLElement): void {
     if (s.id !== 'FIRMWARE_SELECTED') return;
     const { manifest, device, firmware } = s;
 
-    stateManager.transition({ id: 'FLASHING', manifest, device, firmware, percent: 0 });
+    stateManager.transition({ id: 'FLASHING', manifest, device, firmware, percent: 0, phase: 'erasing' });
 
     let binary: ArrayBuffer;
     try {
@@ -89,10 +89,14 @@ export function initApp(root: HTMLElement): void {
       return;
     }
 
+    let currentPhase: 'erasing' | 'writing' = 'erasing';
     try {
       await flasher.flash(binary, {
         onProgress: (percent) => {
-          stateManager.transition({ id: 'FLASHING', manifest, device, firmware, percent });
+          stateManager.transition({ id: 'FLASHING', manifest, device, firmware, percent, phase: currentPhase });
+        },
+        onPhase: (phase) => {
+          currentPhase = phase;
         },
       });
       stateManager.transition({ id: 'FLASH_SUCCESS', manifest, device, firmware });

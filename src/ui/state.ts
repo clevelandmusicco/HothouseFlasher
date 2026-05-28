@@ -12,7 +12,7 @@ export type AppState =
   | { id: 'CONNECT_ERROR'; manifest: FirmwareManifest; message: string }
   | { id: 'CONNECTED'; manifest: FirmwareManifest; device: DeviceInfo }
   | { id: 'FIRMWARE_SELECTED'; manifest: FirmwareManifest; device: DeviceInfo; firmware: FirmwareEntry }
-  | { id: 'FLASHING'; manifest: FirmwareManifest; device: DeviceInfo; firmware: FirmwareEntry; percent: number }
+  | { id: 'FLASHING'; manifest: FirmwareManifest; device: DeviceInfo; firmware: FirmwareEntry; percent: number; phase: 'erasing' | 'writing' }
   | { id: 'FLASH_SUCCESS'; manifest: FirmwareManifest; device: DeviceInfo; firmware: FirmwareEntry }
   | { id: 'FLASH_ERROR'; manifest: FirmwareManifest; device: DeviceInfo; firmware: FirmwareEntry; message: string };
 

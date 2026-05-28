@@ -57,6 +57,7 @@ export const MSG = {
   SELECTED_LABEL: 'Selected:',
 
   // Flashing
+  ERASING_HEADING: 'Erasing ...',
   FLASHING_HEADING: 'Flashing ...',
   FLASHING_DETAIL: (name: string) => `Flashing ${name}. This might take a moment ...`,
   FLASHING_DO_NOT_DISCONNECT: 'Do not disconnect your Hothouse during flashing.',

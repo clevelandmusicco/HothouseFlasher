@@ -124,7 +124,7 @@ export function renderState(state: AppState, callbacks: RenderCallbacks): HTMLEl
       wrap.appendChild(renderConnected(state.manifest, state.device, state.firmware, callbacks));
       break;
     case 'FLASHING':
-      wrap.appendChild(renderFlashing(state.firmware, state.percent));
+      wrap.appendChild(renderFlashing(state.firmware, state.percent, state.phase));
       break;
     case 'FLASH_SUCCESS':
       wrap.appendChild(renderSuccess(state.firmware, callbacks.onFlashAnother));
@@ -299,9 +299,10 @@ function renderConnected(
   return wrap;
 }
 
-function renderFlashing(firmware: FirmwareEntry, percent: number): HTMLElement {
+function renderFlashing(firmware: FirmwareEntry, percent: number, phase: 'erasing' | 'writing'): HTMLElement {
   const card = el('div', { className: 'card' });
-  card.appendChild(el('h2', { className: 'section-heading' }, MSG.FLASHING_HEADING));
+  const heading = phase === 'erasing' ? MSG.ERASING_HEADING : MSG.FLASHING_HEADING;
+  card.appendChild(el('h2', { className: 'section-heading' }, heading));
   card.appendChild(el('p', { className: 'mt-1' }, MSG.FLASHING_DETAIL(firmware.name)));
 
   const barWrap = el('div', { className: 'progress-bar-wrap' });
